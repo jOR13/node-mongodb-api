@@ -34,17 +34,17 @@ const petsSchema = mongoose.Schema({
         minlength: 6
     },
     userID: {
-        type: String,
+        type: Object,
         required: false,
         minlength: 6
     },
     imageID: {
-        type: String,
+        type: Object,
         required: false,
         minlength: 6
     },
     qrID: {
-        type: String,
+        type: Object,
         required: false,
         minlength: 6
     },

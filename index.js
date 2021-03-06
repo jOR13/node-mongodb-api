@@ -40,7 +40,7 @@ app.use(cors(corsOptions));
 app.get("/", (req, res) => {
   res.json({
     estado: true,
-    mensaje: "funciona!",
+    mensaje: "Api funcionando",
   });
 });
 

@@ -75,7 +75,7 @@ router.post("/login", async (req, res) => {
 
 router.post("/register", upload.single('image'), async (req, res) => {
 
-  //upload.single("upload")
+  
   // validate user
   const { error } = schemaRegister.validate(req.body);
 

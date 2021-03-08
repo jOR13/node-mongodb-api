@@ -112,4 +112,16 @@ router.post("/register", upload.single('image'), async (req, res) => {
   }
 });
 
+router.get("/", async (req, res) => {
+  try {
+    const user = await User.find();
+    res.json({
+      error: null,
+      data: user,
+    });
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+});
+
 module.exports = router;

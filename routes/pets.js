@@ -78,5 +78,52 @@ router.get("/:id", async (req, res) => {
     res.status(400).json({ error });
   }
 });
+//actualiza los registros de la mascota
+router.put('/:id', async (req, res) => {
+    const id = req.params.id;
+    const body = req.body;
+  
+    try {
+        await Pets.findByIdAndUpdate(
+            id, body, { useFindAndModify: false }
+        )
+        
+        res.json({
+            estado: true,
+            mensaje: 'Se ha editado con exito'
+        })
+    } catch (error) {
+        console.log(error)
+        res.json({
+            estado: false,
+            mensaje: 'Edicion fallo'
+        })
+    }
+  })
+
+  //borra el registro de la mascotaDB
+router.delete("/:id", async (req, res) => {
+    const id = req.params.id;
+    console.log("id desde backend", id);
+    try {
+      const mascotaDB = await Pets.findByIdAndDelete({ _id: id });
+  
+      // https://stackoverflow.com/questions/27202075/expressjs-res-redirect-not-working-as-expected
+      // res.redirect('/mascotas')
+      if (!mascotaDB) {
+        res.json({
+          estado: false,
+          mensaje: "No se puede eliminar",
+        });
+      } else {
+        res.json({
+          estado: true,
+          mensaje: "eliminado!",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  });
 
 module.exports = router;

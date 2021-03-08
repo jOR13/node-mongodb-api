@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const bodyparser = require("body-parser");
 // import routes
 const authRoutes = require("./routes/auth");
-const authPets = require("./routes/pets");
+const Pets = require("./routes/pets");
+const Qrs = require("./routes/qrs");
 const dashboadRoutes = require('./routes/dashboard');
 const verifyToken = require('./routes/validate-token');
 // cors
@@ -35,7 +36,8 @@ mongoose
 
 // route middlewares
 app.use("/api/user", authRoutes);
-app.use("/api/pets", authPets);
+app.use("/api/pets", Pets);
+app.use("/api/qrs", Qrs);
 
 app.use('/api/dashboard', verifyToken, dashboadRoutes);
 app.use(cors(corsOptions));

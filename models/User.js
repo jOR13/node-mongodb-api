@@ -18,6 +18,12 @@ const userSchema = mongoose.Schema({
         required: true,
         minlength: 6
     },
+    image:
+    {
+        type: String,
+        min: 0,
+        max: 1024
+    },
     date: {
         type: Date,
         default: Date.now

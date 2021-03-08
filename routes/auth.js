@@ -2,11 +2,35 @@ const router = require("express").Router();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
+const multer = require('multer');
+
 // constraseña
 const bcrypt = require("bcrypt");
 
 // validation
 const Joi = require("@hapi/joi");
+
+//define storage for the images
+
+const storage = multer.diskStorage({
+  //destination for files
+  destination: function (request, file, callback) {
+    callback(null, './uploads/images');
+  },
+
+  //add back the extension
+  filename: function (request, file, callback) {
+    callback(null, Date.now() + file.originalname);
+  },
+});
+
+//upload parameters for multer
+const upload = multer({
+  storage: storage,
+  limits: {
+    fieldSize: 1024 * 1024 * 3,
+  },
+});
 
 const schemaRegister = Joi.object({
   name: Joi.string().min(5).max(255).required(),
@@ -49,7 +73,9 @@ router.post("/login", async (req, res) => {
   });
 });
 
-router.post("/register", async (req, res) => {
+router.post("/register", upload.single('image'), async (req, res) => {
+
+  //upload.single("upload")
   // validate user
   const { error } = schemaRegister.validate(req.body);
 
@@ -66,10 +92,14 @@ router.post("/register", async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   const password = await bcrypt.hash(req.body.password, salt);
 
+
+
   const user = new User({
     name: req.body.name,
     email: req.body.email,
     password: password,
+    image: req.file.filename,
+    
   });
   try {
     const savedUser = await user.save();

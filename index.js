@@ -14,6 +14,8 @@ require("dotenv").config();
 
 const app = express();
 
+app.use(cors());
+
 var corsOptions = {
   origin: "*", // Reemplazar con dominio
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
@@ -38,7 +40,6 @@ app.use("/api/pets", Pets);
 app.use("/api/qrs", Qrs);
 
 app.use("/api/dashboard", verifyToken, dashboadRoutes);
-app.use(cors(corsOptions));
 
 app.get("/", (req, res) => {
   res.json({

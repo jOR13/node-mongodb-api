@@ -5,6 +5,7 @@ const bodyparser = require("body-parser");
 const authRoutes = require("./routes/users");
 const Pets = require("./routes/pets");
 const Qrs = require("./routes/qrs");
+const Posts = require("./routes/posts");
 const dashboadRoutes = require("./routes/dashboard");
 const verifyToken = require("./routes/validate-token");
 // cors
@@ -38,6 +39,7 @@ mongoose
 app.use("/api/user", authRoutes);
 app.use("/api/pets", Pets);
 app.use("/api/qrs", Qrs);
+app.use("/api/posts", Posts);
 
 app.use("/api/dashboard", verifyToken, dashboadRoutes);
 
@@ -49,7 +51,7 @@ app.get("/", (req, res) => {
 });
 
 // iniciar server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`servidor andando en: ${PORT}`);
 });

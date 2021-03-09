@@ -45,6 +45,9 @@ const schemaLogin = Joi.object({
 
 //ingresa usuario, devuelve token autorizado
 router.post("/login", async (req, res) => {
+
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
   // validaciones
   const { error } = schemaLogin.validate(req.body);
   if (error) return res.status(400).json({ error: error.details[0].message });

@@ -19,6 +19,7 @@ const schemaCreate = Joi.object({
   qrID: Joi.string().min(0).max(255),
 });
 
+//crea una nueva mascota
 router.post("/createPet", async (req, res) => {
   // validate user
   const { error } = schemaCreate.validate(req.body);
@@ -49,6 +50,7 @@ router.post("/createPet", async (req, res) => {
   }
 });
 
+//retrive all the pets
 router.get("/", async (req, res) => {
   try {
     const pets = await Pets.find();
@@ -60,6 +62,7 @@ router.get("/", async (req, res) => {
     res.status(400).json({ error });
   }
 });
+//retrive only one pet
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
   try {

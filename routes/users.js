@@ -2,7 +2,7 @@ const router = require("express").Router();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
-const multer = require('multer');
+const multer = require("multer");
 
 // constraseña
 const bcrypt = require("bcrypt");
@@ -15,7 +15,7 @@ const Joi = require("@hapi/joi");
 const storage = multer.diskStorage({
   //destination for files
   destination: function (request, file, callback) {
-    callback(null, './uploads/images');
+    callback(null, "./uploads/images");
   },
 
   //add back the extension
@@ -43,6 +43,7 @@ const schemaLogin = Joi.object({
   password: Joi.string().min(6).max(1024).required(),
 });
 
+//ingresa usuario, devuelve token autorizado
 router.post("/login", async (req, res) => {
   // validaciones
   const { error } = schemaLogin.validate(req.body);
@@ -64,18 +65,15 @@ router.post("/login", async (req, res) => {
     process.env.TOKEN_SECRET
   );
 
-
   res.header("auth-token", token).json({
-      user,
-      jwt: { token },
-      error: null,
-    
+    user,
+    jwt: { token },
+    error: null,
   });
 });
 
-router.post("/register", upload.single('image'), async (req, res) => {
-
-  
+//crea un nuevo usuario
+router.post("/register", upload.single("image"), async (req, res) => {
   // validate user
   const { error } = schemaRegister.validate(req.body);
 
@@ -92,14 +90,11 @@ router.post("/register", upload.single('image'), async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   const password = await bcrypt.hash(req.body.password, salt);
 
-
-
   const user = new User({
     name: req.body.name,
     email: req.body.email,
     password: password,
     image: req.file.filename,
-    
   });
   try {
     const savedUser = await user.save();
@@ -112,6 +107,7 @@ router.post("/register", upload.single('image'), async (req, res) => {
   }
 });
 
+//devuelve todos los usuarios
 router.get("/", async (req, res) => {
   try {
     const user = await User.find();
@@ -124,4 +120,17 @@ router.get("/", async (req, res) => {
   }
 });
 
+//devuelve solo el usuario especifico
+router.get("/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const user = await User.findOne({ _id: id });
+    res.json({
+      error: null,
+      data: user,
+    });
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+});
 module.exports = router;

@@ -15,7 +15,7 @@ require("dotenv").config();
 const app = express();
 
 var corsOptions = {
-  origin: "*", // Reemplazar con dominio
+  origin: "http://localhost:3000", // Reemplazar con dominio
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
@@ -48,7 +48,7 @@ app.get("/", (req, res) => {
 });
 
 // iniciar server
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`servidor andando en: ${PORT}`);
 });

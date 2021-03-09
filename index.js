@@ -15,7 +15,7 @@ require("dotenv").config();
 const app = express();
 
 var corsOptions = {
-  origin: "http://localhost:3000", // Reemplazar con dominio
+  origin: "*", // Reemplazar con dominio
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 

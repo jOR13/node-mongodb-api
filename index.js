@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyparser = require("body-parser");
+const path = require('path');
 // import routes
 const authRoutes = require("./routes/users");
 const Pets = require("./routes/pets");
@@ -18,7 +19,7 @@ const app = express();
 app.use(cors());
 
 var corsOptions = {
-  origin: "*", // Reemplazar con dominio
+  origin: "*", // Reemplazar con dominiox
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
@@ -35,12 +36,15 @@ mongoose
 
 // import routes
 
+// app.use(express.static('uploads/images/'));
+app.use(express.static('uploads/images/posts'));
+
+
 // route middlewares
 app.use("/api/user", authRoutes);
 app.use("/api/pets", Pets);
 app.use("/api/qrs", Qrs);
 app.use("/api/posts", Posts);
-
 app.use("/api/dashboard", verifyToken, dashboadRoutes);
 
 app.get("/", (req, res) => {

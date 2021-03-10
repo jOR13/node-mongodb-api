@@ -19,7 +19,7 @@ const app = express();
 app.use(cors(corsOptions));
 
 var corsOptions = {
-  origin: "*", // Reemplazar con dominiox
+  origin: "http://localhost:3000", // Reemplazar con dominiox
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 

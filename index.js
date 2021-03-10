@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyparser = require("body-parser");
-const path = require('path');
+const path = require("path");
 // import routes
 const authRoutes = require("./routes/users");
 const Pets = require("./routes/pets");
@@ -16,7 +16,7 @@ require("dotenv").config();
 
 const app = express();
 
-app.use(cors());
+app.use(cors(corsOptions));
 
 var corsOptions = {
   origin: "*", // Reemplazar con dominiox
@@ -37,8 +37,7 @@ mongoose
 // import routes
 
 // app.use(express.static('uploads/images/'));
-app.use(express.static('uploads/images/posts'));
-
+app.use(express.static("uploads/images/posts"));
 
 // route middlewares
 app.use("/api/user", authRoutes);

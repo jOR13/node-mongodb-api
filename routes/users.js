@@ -33,8 +33,10 @@ const upload = multer({
 });
 
 const schemaRegister = Joi.object({
-  name: Joi.string().min(5).max(255).required(),
+  fullName: Joi.string().min(5).max(255).required(),
   email: Joi.string().min(6).max(255).required().email(),
+  address: Joi.string().min(6).max(255).required(),
+  phone: Joi.string().min(6).max(255).required(),
   password: Joi.string().min(6).max(1024).required(),
 });
 
@@ -59,7 +61,7 @@ router.post("/login", async (req, res) => {
   // create token
   const token = jwt.sign(
     {
-      name: user.name,
+      fullName: user.fullName,
       id: user._id,
     },
     process.env.TOKEN_SECRET
@@ -91,8 +93,10 @@ router.post("/register", upload.single("image"), async (req, res) => {
   const password = await bcrypt.hash(req.body.password, salt);
 
   const user = new User({
-    name: req.body.name,
+    fullName: req.body.fullName,
     email: req.body.email,
+    address: req.body.address,
+    phone: req.body.phone,
     password: password,
     image: req.file.filename,
   });
@@ -132,14 +136,5 @@ router.get("/:id", async (req, res) => {
   } catch (error) {
     res.status(400).json({ error });
   }
-});
-
-router.get("/info", function (req, res) {
- 
-    res.status(200).json({
-      imageName: "some image",
-      imageUrl: "/1615333499854code.png.jpg",
-    });
-
 });
 module.exports = router;

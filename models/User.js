@@ -39,7 +39,12 @@ const userSchema = mongoose.Schema({
     date: {
         type: Date,
         default: Date.now
-    }
+    },
+    SignUpType: {
+        type: String,
+        required: true,
+        minlength: 6
+    },
 })
 
 module.exports = mongoose.model('User', userSchema);

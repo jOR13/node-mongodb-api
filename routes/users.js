@@ -99,6 +99,7 @@ router.post("/register", upload.single("image"), async (req, res) => {
     phone: req.body.phone,
     password: password,
     image: req.file.filename,
+    SignUpType: req.body.SignUpType,
   });
   try {
     const savedUser = await user.save();

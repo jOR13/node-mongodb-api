@@ -43,7 +43,7 @@ const userSchema = mongoose.Schema({
     SignUpType: {
         type: String,
         required: true,
-        minlength: 6
+        minlength: 5
     },
 })
 

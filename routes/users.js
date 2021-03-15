@@ -38,6 +38,8 @@ const schemaRegister = Joi.object({
   address: Joi.string().min(6).max(255).required(),
   phone: Joi.string().min(6).max(255).required(),
   password: Joi.string().min(6).max(1024).required(),
+  image: Joi.string().max(1024).required(),
+  SignUpType: Joi.string().min(1).max(1024).required(),
 });
 
 const schemaLogin = Joi.object({
@@ -80,6 +82,7 @@ router.post("/register", upload.single("image"), async (req, res) => {
   const { error } = schemaRegister.validate(req.body);
 
   if (error) {
+    console.log(error);
     return res.status(400).json({ error: error.details[0].message });
   }
 
@@ -101,6 +104,46 @@ router.post("/register", upload.single("image"), async (req, res) => {
     image: req.file.filename,
     SignUpType: req.body.SignUpType,
   });
+
+  try {
+    const savedUser = await user.save();
+    res.json({
+      error: null,
+      data: savedUser,
+    });
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+});
+//crea un nuevo usuario
+router.post("/registerGoogle", async (req, res) => {
+  // validate user
+  const { error } = schemaRegister.validate(req.body);
+
+  if (error) {
+    console.log(error);
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  const isEmailExist = await User.findOne({ email: req.body.email });
+  if (isEmailExist) {
+    return res.status(400).json({ error: "Email ya registrado" });
+  }
+
+  // hash contraseña
+  const salt = await bcrypt.genSalt(10);
+  const password = await bcrypt.hash(req.body.password, salt);
+
+  const user = new User({
+    fullName: req.body.fullName,
+    email: req.body.email,
+    address: req.body.address,
+    phone: req.body.phone,
+    password: password,
+    image: req.body.image,
+    SignUpType: req.body.SignUpType,
+  });
+
   try {
     const savedUser = await user.save();
     res.json({

@@ -37,7 +37,7 @@ mongoose
 // import routes
 
 // app.use(express.static('uploads/images/'));
-app.use(express.static("uploads/images/posts"));
+app.use(express.static("uploads/images"));
 
 // route middlewares
 app.use("/api/user", authRoutes);

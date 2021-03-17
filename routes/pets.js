@@ -9,7 +9,7 @@ const multer = require("multer");
 const storage = multer.diskStorage({
   //destination for files
   destination: function (request, file, callback) {
-    callback(null, "./uploads/images/pets");
+    callback(null, "./uploads/images");
   },
 
   //add back the extension
@@ -36,14 +36,14 @@ const schemaCreate = Joi.object({
   address: Joi.string().min(5).max(255).required(),
   description: Joi.string().min(5).max(255).required(),
   contact: Joi.string().min(5).max(255).required(),
-  reward: Joi.number().min(0).max(255).required(),
+  reward: Joi.number().min(0).max(999999).required(),
   userID: Joi.string().min(0).max(255),
   imageID: Joi.string().min(0).max(255),
   qrID: Joi.string().min(0).max(255),
 });
 
 //crea una nueva mascota
-router.post("/createPet", upload.single("image"), async (req, res) => {
+router.post("/createPet", upload.single("imageID"), async (req, res) => {
   // validate user
   const { error } = schemaCreate.validate(req.body);
 

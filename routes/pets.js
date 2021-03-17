@@ -2,6 +2,29 @@ const router = require("express").Router();
 const Pets = require("../models/Pets");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
+
+//define storage for the images
+
+const storage = multer.diskStorage({
+  //destination for files
+  destination: function (request, file, callback) {
+    callback(null, "./uploads/images/pets");
+  },
+
+  //add back the extension
+  filename: function (request, file, callback) {
+    callback(null, Date.now() + file.originalname);
+  },
+});
+
+//upload parameters for multer
+const upload = multer({
+  storage: storage,
+  limits: {
+    fieldSize: 1024 * 1024 * 3,
+  },
+});
 
 // validation
 const Joi = require("@hapi/joi");
@@ -20,7 +43,7 @@ const schemaCreate = Joi.object({
 });
 
 //crea una nueva mascota
-router.post("/createPet", async (req, res) => {
+router.post("/createPet", upload.single("image"), async (req, res) => {
   // validate user
   const { error } = schemaCreate.validate(req.body);
 
@@ -35,7 +58,7 @@ router.post("/createPet", async (req, res) => {
     description: req.body.description,
     contact: req.body.contact,
     userID: req.body.userID,
-    imageID: req.body.imageID,
+    imageID: req.file.filename,
     qrID: req.body.qrID,
     reward: req.body.reward,
   });

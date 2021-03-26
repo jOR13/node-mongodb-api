@@ -119,16 +119,43 @@ router.get("/code/:code", async (req, res) => {
 });
 
 //actualiza los datos del qr
-router.put("/:code", async (req, res) => {
+router.put("/addqr/:code", async (req, res) => {
   const code = req.params.code;
   const body = req.body;
 
   try {
-    
-   await Qrs.findOneAndUpdate(code, body, { useFindAndModify: false });
+    const codeID = await Qrs.findOne({ code: code });
+
+    await Qrs.findByIdAndUpdate(codeID.id, body, { useFindAndModify: false });
     res.json({
       estado: true,
       mensaje: "Se ha editado con exito",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      estado: false,
+      mensaje: "Edicion fallo",
+    });
+  }
+});
+
+//actualiza los datos del qr
+router.put("/:id", async (req, res) => {
+  const id = req.params.id;
+  const body = req.body;
+
+  try {
+    const qr = await Qrs.findByIdAndUpdate(id, body, {
+      useFindAndModify: false,
+    });
+
+   
+
+    res.json({
+      estado: true,
+      mensaje: "Se ha editado con exito",
+      qr: qr,
     });
   } catch (error) {
     console.log(error);

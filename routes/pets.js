@@ -112,10 +112,10 @@ router.get("/:id", async (req, res) => {
   }
 });
 //actualiza los registros de la mascota
-router.patch("/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
   const { error } = schemaCreate.validate(req.body);
 
-  console.log(error);
+  // console.log(error);
 
   const id = req.params.id;
   const body = req.body;
@@ -143,8 +143,7 @@ router.delete("/:id", async (req, res) => {
   try {
     const mascotaDB = await Pets.findByIdAndDelete({ _id: id });
 
-    // https://stackoverflow.com/questions/27202075/expressjs-res-redirect-not-working-as-expected
-    // res.redirect('/mascotas')
+    
     if (!mascotaDB) {
       res.json({
         estado: false,

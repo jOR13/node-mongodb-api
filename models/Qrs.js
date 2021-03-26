@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
 
 const qrsSchema = mongoose.Schema({
+    code: {
+        type: String,
+        required: true,
+        min: 1,
+        max: 255
+    },
     status: {
         type: String,
         required: true,

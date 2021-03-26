@@ -4,19 +4,19 @@ const petsSchema = mongoose.Schema({
     name: {
         type: String,
         required: true,
-        min: 5,
+        min: 3,
         max: 255
     },
     type: {
         type: String,
         required: true,
-        min: 6,
+        min: 3,
         max: 1024
     },
     race: {
         type: String,
         required: true,
-        minlength: 6
+        minlength: 3
     },
     address: {
         type: String,

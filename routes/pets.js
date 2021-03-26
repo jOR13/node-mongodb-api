@@ -50,6 +50,7 @@ router.post("/createPet", upload.single("imageID"), async (req, res) => {
   if (error) {
     return res.status(400).json({ error: error.details[0].message });
   }
+
   const pet = new Pets({
     name: req.body.name,
     type: req.body.type,
@@ -76,10 +77,18 @@ router.post("/createPet", upload.single("imageID"), async (req, res) => {
 //retrive all the pets
 router.get("/", async (req, res) => {
   try {
-    const pets = await Pets.find();
+    const mascotaDB = await Pets.find();
+
+    if (mascotaDB.length > 0) {
+      for (const element of mascotaDB) {
+        const user = await User.findOne({ _id: element.userID });
+        element.userID = user;
+      }
+    }
+
     res.json({
       error: null,
-      data: pets,
+      data: mascotaDB,
     });
   } catch (error) {
     res.status(400).json({ error });
@@ -91,10 +100,8 @@ router.get("/:id", async (req, res) => {
   try {
     const mascotaDB = await Pets.findOne({ _id: id });
 
-    if (mascotaDB.userID) {
-      const user = await User.findOne({ _id: mascotaDB.userID });
-      mascotaDB.userID = user;
-    }
+    const user = await User.findOne({ _id: mascotaDB.userID });
+    mascotaDB.userID = user;
 
     res.json({
       error: null,
@@ -105,51 +112,53 @@ router.get("/:id", async (req, res) => {
   }
 });
 //actualiza los registros de la mascota
-router.put('/:id', async (req, res) => {
-    const id = req.params.id;
-    const body = req.body;
-  
-    try {
-        await Pets.findByIdAndUpdate(
-            id, body, { useFindAndModify: false }
-        )
-        
-        res.json({
-            estado: true,
-            mensaje: 'Se ha editado con exito'
-        })
-    } catch (error) {
-        console.log(error)
-        res.json({
-            estado: false,
-            mensaje: 'Edicion fallo'
-        })
-    }
-  })
+router.patch("/:id", async (req, res) => {
+  const { error } = schemaCreate.validate(req.body);
 
-  //borra el registro de la mascotaDB
+  console.log(error);
+
+  const id = req.params.id;
+  const body = req.body;
+
+  try {
+    await Pets.findByIdAndUpdate(id, body, { useFindAndModify: false });
+
+    res.json({
+      estado: true,
+      mensaje: "Se ha editado con exito",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      estado: false,
+      mensaje: "Edicion fallo",
+    });
+  }
+});
+
+//borra el registro de la mascotaDB
 router.delete("/:id", async (req, res) => {
-    const id = req.params.id;
-    console.log("id desde backend", id);
-    try {
-      const mascotaDB = await Pets.findByIdAndDelete({ _id: id });
-  
-      // https://stackoverflow.com/questions/27202075/expressjs-res-redirect-not-working-as-expected
-      // res.redirect('/mascotas')
-      if (!mascotaDB) {
-        res.json({
-          estado: false,
-          mensaje: "No se puede eliminar",
-        });
-      } else {
-        res.json({
-          estado: true,
-          mensaje: "eliminado!",
-        });
-      }
-    } catch (error) {
-      console.log(error);
+  const id = req.params.id;
+  console.log("id desde backend", id);
+  try {
+    const mascotaDB = await Pets.findByIdAndDelete({ _id: id });
+
+    // https://stackoverflow.com/questions/27202075/expressjs-res-redirect-not-working-as-expected
+    // res.redirect('/mascotas')
+    if (!mascotaDB) {
+      res.json({
+        estado: false,
+        mensaje: "No se puede eliminar",
+      });
+    } else {
+      res.json({
+        estado: true,
+        mensaje: "eliminado!",
+      });
     }
-  });
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 module.exports = router;

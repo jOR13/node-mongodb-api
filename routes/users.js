@@ -2,6 +2,9 @@ const router = require("express").Router();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
+
+const webpush = require('../webpush.js');
+
 const multer = require("multer");
 
 // constraseña
@@ -23,6 +26,23 @@ const storage = multer.diskStorage({
     callback(null, Date.now() + file.originalname);
   },
 });
+
+
+router.post("/subscription", (req, res) => {
+   // Get pushSubscription object
+   const subscription = req.body;
+
+   // Send 201 - resource created
+   res.status(201).json({});
+ 
+   // Create payload
+   const payload = JSON.stringify({ title: "Push Test" });
+ 
+   // Pass object into sendNotification
+   webpush
+     .sendNotification(subscription, payload)
+     .catch(err => console.error(err));
+ });
 
 //upload parameters for multer
 const upload = multer({

@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyparser = require("body-parser");
@@ -11,9 +12,6 @@ const dashboadRoutes = require("./routes/dashboard");
 const verifyToken = require("./routes/validate-token");
 // cors
 const cors = require("cors");
-
-require("dotenv").config();
-
 const app = express();
 
 app.use(cors(corsOptions));

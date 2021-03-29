@@ -58,7 +58,7 @@ const schemaRegister = Joi.object({
   address: Joi.string().min(6).max(255).required(),
   phone: Joi.string().min(6).max(255).required(),
   password: Joi.string().min(6).max(1024).required(),
-  image: Joi.string().max(1024).required(),
+  // filename: Joi.string().max(1024).required(),
   SignUpType: Joi.string().min(1).max(1024).required(),
 });
 

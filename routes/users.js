@@ -1,18 +1,14 @@
 const router = require("express").Router();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-
-
-const webpush = require('../webpush.js');
+const nodemailer = require("nodemailer");
+const webpush = require("../webpush.js");
 
 const multer = require("multer");
-
 // constraseña
 const bcrypt = require("bcrypt");
-
 // validation
 const Joi = require("@hapi/joi");
-
 //define storage for the images
 
 const storage = multer.diskStorage({
@@ -27,23 +23,21 @@ const storage = multer.diskStorage({
   },
 });
 
-
 router.post("/subscription", (req, res) => {
-   // Get pushSubscription object
-   const subscription = req.body;
+  // Get pushSubscription object
+  const subscription = req.body;
 
-   // Send 201 - resource created
-   res.status(201).json({});
- 
-   // Create payload
-   const payload = JSON.stringify({ title: "Push Test" });
- 
-   // Pass object into sendNotification
-   webpush
-     .sendNotification(subscription, payload)
-     .catch(err => console.error(err));
- });
+  // Send 201 - resource created
+  res.status(201).json({});
 
+  // Create payload
+  const payload = JSON.stringify({ title: "Push Test" });
+
+  // Pass object into sendNotification
+  webpush
+    .sendNotification(subscription, payload)
+    .catch((err) => console.error(err));
+});
 //upload parameters for multer
 const upload = multer({
   storage: storage,
@@ -51,17 +45,15 @@ const upload = multer({
     fieldSize: 1024 * 1024 * 3,
   },
 });
-
 const schemaRegister = Joi.object({
   fullName: Joi.string().min(5).max(255).required(),
   email: Joi.string().min(6).max(255).required().email(),
-  address: Joi.string().min(6).max(255).required(),
-  phone: Joi.string().min(6).max(255).required(),
   password: Joi.string().min(6).max(1024).required(),
-  // filename: Joi.string().max(1024).required(),
   SignUpType: Joi.string().min(1).max(1024).required(),
+  address: Joi.string().min(0).max(255),
+  phone: Joi.string().min(0).max(255),
+  // filename: Joi.string().max(1024).required(),
 });
-
 const schemaLogin = Joi.object({
   email: Joi.string().min(6).max(255).required().email(),
   password: Joi.string().min(6).max(1024).required(),
@@ -74,8 +66,10 @@ router.post("/login", async (req, res) => {
   if (error) return res.status(400).json({ error: error.details[0].message });
 
   const user = await User.findOne({ email: req.body.email });
-  if (!user) return res.status(400).json({ error: "Usuario no encontrado" });
-
+  if (user === null) {
+    console.log(res);
+    return res.json({ error: "Usuario no encontrado" });
+  }
   const validPassword = await bcrypt.compare(req.body.password, user.password);
   if (!validPassword)
     return res.status(400).json({ error: "contraseña no válida" });
@@ -93,6 +87,58 @@ router.post("/login", async (req, res) => {
     user,
     jwt: { token },
     error: null,
+  });
+});
+
+let transporter = nodemailer.createTransport({
+  host: "smtp.office365.com",
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: "jesus.ochoa@hiper-gas.com", // generated ethereal user
+    pass: "Pichitoto123", // generated ethereal password
+  },
+});
+//send pw recovery
+router.post("/resetPw", async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (user === null) {
+    console.log(res);
+    return res.json({ error: "Usuario no encontrado" });
+  }
+
+  const newPass = generatePasswordRand(8, "alf");
+
+  // hash contraseña
+  const salt = await bcrypt.genSalt(10);
+  const password = await bcrypt.hash(newPass, salt);
+
+  const userUpdate = await User.findByIdAndUpdate(
+    user._id,
+    { password: password },
+    {
+      useFindAndModify: false,
+    }
+  );
+
+  console.log(userUpdate);
+
+  let info = await transporter.sendMail({
+    from: "jesus.ochoa@hiper-gas.com", // sender address
+    to: req.body.email, // list of receivers
+    subject: "Solicitud de cambio de contraseña", // Subject line
+    text: "Hello world?", // plain text body
+    html: `<h1 style="text-align: center;"><strong>Hola ${user.fullName}, tu contrase&ntilde;a temporal de HOPPAS es: <em>${newPass}</em> </strong></h1>`, // html body
+  });
+
+  console.log("Message sent: %s", info.messageId);
+
+  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+
+  res.json({
+    error: null,
+    newPass: newPass,
+    update: userUpdate,
   });
 });
 
@@ -136,18 +182,18 @@ router.post("/register", upload.single("image"), async (req, res) => {
   }
 });
 //crea un nuevo usuario
-router.post("/registerGoogle", async (req, res) => {
+router.post("/registerExternal", async (req, res) => {
   // validate user
-  const { error } = schemaRegister.validate(req.body);
+  // const { error } = schemaRegister.validate(req.body);
 
-  if (error) {
-    console.log(error);
-    return res.status(400).json({ error: error.details[0].message });
-  }
+  // if (error) {
+  //   console.log(error);
+  //   return res.status(400).json({ error: error.details[0].message });
+  // }
 
   const isEmailExist = await User.findOne({ email: req.body.email });
   if (isEmailExist) {
-    return res.status(400).json({ error: "Email ya registrado" });
+    return res.json({ error: "Email ya registrado" });
   }
 
   // hash contraseña
@@ -201,4 +247,33 @@ router.get("/:id", async (req, res) => {
     res.status(400).json({ error });
   }
 });
+
+function generatePasswordRand(length, type) {
+  let characters;
+  switch (type) {
+    case "num":
+      characters = "0123456789";
+      break;
+    case "alf":
+      characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      break;
+    case "rand":
+      //FOR ↓
+      break;
+    default:
+      characters =
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      break;
+  }
+  var pass = "";
+  for (let i = 0; i < length; i++) {
+    if (type == "rand") {
+      pass += String.fromCharCode((Math.floor(Math.random() * 100) % 94) + 33);
+    } else {
+      pass += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+  }
+  return pass;
+}
+
 module.exports = router;

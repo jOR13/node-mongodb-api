@@ -9,34 +9,34 @@ const multer = require("multer");
 //define storage for the images
 
 const storage = multer.diskStorage({
-    //destination for files
-    destination: function (request, file, callback) {
-      callback(null, "./uploads/images/posts");
-    },
-  
-    //add back the extension
-    filename: function (request, file, callback) {
-      callback(null, Date.now() + file.originalname);
-    },
-  });
-  
-  //upload parameters for multer
-  const upload = multer({
-    storage: storage,
-    limits: {
-      fieldSize: 1024 * 1024 * 3,
-    },
-  });
+  //destination for files
+  destination: function (request, file, callback) {
+    callback(null, "./uploads/images/");
+  },
+
+  //add back the extension
+  filename: function (request, file, callback) {
+    callback(null, Date.now() + file.originalname);
+  },
+});
+
+//upload parameters for multer
+const upload = multer({
+  storage: storage,
+  limits: {
+    fieldSize: 1024 * 1024 * 3,
+  },
+});
 
 // validation
 const Joi = require("@hapi/joi");
 
 const schemaCreate = Joi.object({
-    userID: Joi.string().min(3).max(255).required(),
-    message: Joi.string().min(3).max(9999).required(),
+  userID: Joi.string().min(3).max(255).required(),
+  message: Joi.string().min(3).max(9999).required(),
 });
 
-router.post("/createPost",upload.single("image"), async (req, res) => {
+router.post("/createSimplePost", async (req, res) => {
   // validate user
   const { error } = schemaCreate.validate(req.body);
 
@@ -46,7 +46,29 @@ router.post("/createPost",upload.single("image"), async (req, res) => {
   const post = new Posts({
     userID: req.body.userID,
     message: req.body.message,
-    image: req.body.image,
+  });
+  try {
+    const savePost = await post.save();
+    res.json({
+      error: null,
+      data: savePost,
+    });
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+});
+
+router.post("/createPost", upload.single("image"), async (req, res) => {
+  // validate user
+  const { error } = schemaCreate.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+  const post = new Posts({
+    userID: req.body.userID,
+    message: req.body.message,
+    image:  req.file.filename,
   });
   try {
     const savedQr = await post.save();
@@ -58,10 +80,22 @@ router.post("/createPost",upload.single("image"), async (req, res) => {
     res.status(400).json({ error });
   }
 });
+
 //obtiene todos los post
 router.get("/", async (req, res) => {
   try {
     const post = await Posts.find();
+
+
+
+    if (post.length > 0) {
+      for (const element of post) {
+        const user = await User.findOne({ _id: element.userID });
+        element.userID = user;
+      }
+    }
+
+
     res.json({
       error: null,
       data: post,

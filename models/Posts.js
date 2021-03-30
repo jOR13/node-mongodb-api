@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 
 const postSchema = mongoose.Schema({
   userID: {
-    type: String,
-    required: true,
+    type: Object,
+    required: false,
+    minlength: 6,
   },
   message: {
     type: String,

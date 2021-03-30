@@ -15,14 +15,10 @@ const userSchema = mongoose.Schema({
     },
     address: {
         type: String,
-        required: true,
-        min: 6,
         max: 1024
     },
     phone: {
         type: String,
-        required: true,
-        min: 6,
         max: 1024
     },
     password: {

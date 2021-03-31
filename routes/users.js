@@ -2,7 +2,7 @@ const router = require("express").Router();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const webpush = require("../webpush.js");
+// const webpush = require("../webpush.js");
 
 const multer = require("multer");
 // constraseña

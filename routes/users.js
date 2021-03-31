@@ -95,8 +95,8 @@ let transporter = nodemailer.createTransport({
   port: 587,
   secure: false, // true for 465, false for other ports
   auth: {
-    user: process.env.EMAIL_USER, // generated ethereal user
-    pass: process.env.PASSWORD_MAIL // generated ethereal password
+    user: process.env.EMAIL_USER,
+    pass: process.env.PASSWORD_MAIL,
   },
 });
 //send pw recovery

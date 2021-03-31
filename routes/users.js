@@ -23,21 +23,21 @@ const storage = multer.diskStorage({
   },
 });
 
-router.post("/subscription", (req, res) => {
-  // Get pushSubscription object
-  const subscription = req.body;
+// router.post("/subscription", (req, res) => {
+//   // Get pushSubscription object
+//   const subscription = req.body;
 
-  // Send 201 - resource created
-  res.status(201).json({});
+//   // Send 201 - resource created
+//   res.status(201).json({});
 
-  // Create payload
-  const payload = JSON.stringify({ title: "Push Test" });
+//   // Create payload
+//   const payload = JSON.stringify({ title: "Push Test" });
 
-  // Pass object into sendNotification
-  webpush
-    .sendNotification(subscription, payload)
-    .catch((err) => console.error(err));
-});
+//   // Pass object into sendNotification
+//   webpush
+//     .sendNotification(subscription, payload)
+//     .catch((err) => console.error(err));
+// });
 //upload parameters for multer
 const upload = multer({
   storage: storage,
@@ -91,7 +91,7 @@ router.post("/login", async (req, res) => {
 });
 
 let transporter = nodemailer.createTransport({
-  host: "smtp.office365.com",
+  host: "smtp.gmail.com",
   port: 587,
   secure: false, // true for 465, false for other ports
   auth: {
@@ -124,10 +124,10 @@ router.post("/resetPw", async (req, res) => {
   console.log(userUpdate);
 
   let info = await transporter.sendMail({
-    from: "jesus.ochoa@hiper-gas.com", // sender address
+    from: process.env.EMAIL_USER, // sender address
     to: req.body.email, // list of receivers
     subject: "Solicitud de cambio de contraseña", // Subject line
-    text: "Hello world?", // plain text body
+    // text: "Hello world?", // plain text body
     html: `<h1 style="text-align: center;"><strong>Hola ${user.fullName}, tu contrase&ntilde;a temporal de HOPPAS es: <em>${newPass}</em> </strong></h1>`, // html body
   });
 

@@ -56,7 +56,11 @@ const petsSchema = mongoose.Schema({
     date: {
         type: Date,
         default: Date.now
-    }
+    },
+    status: {
+        type: String
+    },
+
 })
 
 module.exports = mongoose.model('Pets', petsSchema);

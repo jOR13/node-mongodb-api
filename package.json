@@ -28,3 +28,6 @@
     "web-push": "^3.4.4"
   }
 }
+
+git fetch origin
+git checkout -b "591-make-entire-adaptable-site-suitible-for-mobile-view-apply-in-al-sections-2" "origin/591-make-entire-adaptable-site-suitible-for-mobile-view-apply-in-al-sections-2"
